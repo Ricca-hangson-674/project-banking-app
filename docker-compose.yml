@@ -1,0 +1,37 @@
+services:
+  maven:
+    image: maven:3.8.4-eclipse-temurin-17
+    working_dir: /banking-app
+    command: /bin/sh -c "tail -f /dev/null" # Keeps the container running
+    environment:
+      - USER_ID=${USER_ID:-1000}
+      - GROUP_ID=${GROUP_ID:-1000}
+    user: "${USER_ID}:${GROUP_ID}"
+    volumes:
+      - ./banking-app:/banking-app
+      - ./.m2:/root/.m2
+
+  mysql:
+    image: mysql
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: banking_app
+      MYSQL_ROOT_PASSWORD: root
+      # MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      # MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    ports:
+      - "3306"
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
