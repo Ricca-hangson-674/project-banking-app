@@ -1,3 +1,5 @@
 /mysql
 /.m2
 /banking-app/target
+
+.env
